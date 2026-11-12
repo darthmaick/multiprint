@@ -1,0 +1,102 @@
+/* Version C — accueil resserré (Mad Makers, nov. 2026)
+   Charge après styles.css et b.css. Reprend les composants de la B, ajoute :
+   grille produits unique, bande de preuves, logos homogènes, teaser entreprise. */
+
+.c-page .section { padding: var(--s9) 0; }
+
+/* ---------- Produits : une seule entrée, chevauche le hero ---------- */
+.cprod { position: relative; z-index: 5; margin-top: -96px; background: linear-gradient(transparent 96px, var(--mist) 96px); }
+.cprod__panel { background: #fff; box-shadow: 0 24px 60px rgba(17,18,20,.16); padding: var(--s7) var(--s7) var(--s6); }
+.cprod__head { display: flex; justify-content: space-between; align-items: end; gap: var(--s6); margin-bottom: var(--s6); }
+.cprod__head p { color: var(--muted); max-width: 52ch; }
+.pgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s5); }
+.pcard { display: flex; flex-direction: column; gap: var(--s3); scroll-margin-top: calc(var(--header-h) + var(--s5)); }
+.pcard__media { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--mist); }
+.pcard__media img { width: 100%; height: 100%; object-fit: cover; transition: scale var(--duration-slow) var(--ease-smooth-out); }
+.pcard:hover .pcard__media img { scale: 1.03; }
+.pcard__media .note { position: absolute; left: var(--s2); bottom: var(--s2); margin: 0; }
+.pcard h3 { margin-top: var(--s2); font-size: 1.3125rem; font-stretch: 106%; }
+.pcard p { flex: 1; color: var(--muted); font-size: .9688rem; line-height: 1.5; }
+.pcard .link-arrow { align-self: flex-start; min-height: 24px; }
+.sectors { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); margin-top: var(--s6); padding-top: var(--s5); border-top: 1px solid var(--line); }
+.sectors > p { margin-right: var(--s3); font-weight: 600; }
+
+/* ---------- Bande de preuves ---------- */
+.cproof { background: var(--mist); padding: var(--s7) 0 var(--s8); }
+.cproof ul { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.cproof li { display: flex; flex-direction: column; gap: 4px; padding: var(--s5); background: #fff; }
+.cproof strong { display: flex; align-items: flex-start; font-size: clamp(2.25rem, 1.6rem + 2vw, 3.25rem); font-weight: 800; font-stretch: 112%; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.cproof strong sup { margin-left: 3px; font-size: .45em; line-height: 1; color: var(--red); top: 0; }
+.cproof li > span { font-weight: 600; }
+.cproof small { margin-top: auto; padding-top: var(--s2); color: var(--muted); font-size: .875rem; line-height: 1.45; }
+.cproof__src { margin-top: var(--s3); }
+
+/* ---------- Savoir-faire : titre, ligne, onglets et panneau tiennent dans l'écran ----------
+   Hauteur du schéma = largeur du conteneur × 172/1200 (viewBox). Le panneau prend le reste
+   de l'écran, entre 240 et 460 px ; 300 px = titre, onglets, marges et respiration. */
+.c-page #savoir-faire {
+  --sf-svg: calc(min(100vw - 2 * var(--gutter), var(--wrap)) * 172 / 1200);
+  --sf-panel: clamp(240px, calc(100svh - var(--header-h) - var(--sf-svg) - 300px), 460px);
+}
+.c-page #savoir-faire .head { margin-bottom: var(--s5); }
+.c-page #savoir-faire .machine { margin-bottom: var(--s4); }
+.c-page #savoir-faire .bpanel { height: var(--sf-panel); grid-template-columns: 3fr 2fr; }
+/* aspect-ratio hérité (.ppanel figure, 16/10) : avec une hauteur imposée, il réduirait la largeur de la photo */
+.c-page #savoir-faire .bpanel figure { min-height: 0; aspect-ratio: auto; }
+.c-page #savoir-faire .bpanel__text { padding: var(--s5) var(--s6); gap: var(--s3); overflow: hidden; }
+.c-page #savoir-faire .bpanel__text h3 { font-size: clamp(1.5rem, 1.2rem + .9vw, 2rem); }
+@media (max-width: 900px) {
+  .c-page #savoir-faire .bpanel { height: auto; grid-template-columns: 1fr; }
+  .c-page #savoir-faire .bpanel figure { aspect-ratio: 16 / 9; }
+  .c-page #savoir-faire .bpanel__text { padding: var(--s5); }
+}
+/* Mobile : onglets sur une seule ligne qui défile, au lieu de trois lignes */
+@media (max-width: 760px) {
+  .c-page #savoir-faire .machine__tabs {
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain;
+    margin-inline: calc(-1 * var(--gutter)); padding: var(--s3) var(--gutter) var(--s1);
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent);
+            mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent);
+  }
+  .c-page #savoir-faire .machine__tabs::-webkit-scrollbar { display: none; }
+  .c-page #savoir-faire .mtab { flex: none; white-space: nowrap; min-height: 44px; }
+  .c-page #savoir-faire .bpanel figure { aspect-ratio: 2 / 1; }
+}
+
+/* ---------- Références : logos homogènes ---------- */
+.c-page .lchips { gap: var(--s3); max-width: 1080px; margin-inline: auto; }
+.c-page .lchips li { width: 184px; height: 104px; border-radius: 10px; }
+.c-page .lchips img { max-height: 56px; max-width: 128px; filter: grayscale(1) brightness(.72) contrast(1.25); opacity: .9; transition: filter var(--duration-quick) var(--ease-smooth-out), opacity var(--duration-quick) var(--ease-smooth-out); }
+.c-page .lchips li:hover img { filter: none; opacity: 1; }
+
+/* ---------- Teaser entreprise ---------- */
+.cteaser .bcompany__text > * + * { margin-top: var(--s5); }
+.cteaser .link-arrow { color: #fff; }
+
+/* ---------- Page L'entreprise ---------- */
+.c-page .news { margin-top: 0; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1080px) {
+  .pgrid { grid-template-columns: repeat(2, 1fr); row-gap: var(--s6); }
+  .cproof ul { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .cprod { margin-top: 0; background: var(--mist); padding-top: var(--s6); }
+  .cprod__panel { padding: var(--s6) var(--s5); box-shadow: none; }
+  .cprod__head { flex-direction: column; align-items: start; gap: var(--s3); }
+}
+@media (max-width: 560px) {
+  .pgrid { grid-template-columns: 1fr; gap: var(--s5); }
+  .pcard { display: grid; grid-template-columns: 112px 1fr; column-gap: var(--s4); row-gap: var(--s1); align-items: start; }
+  .pcard__media { grid-row: 1 / span 3; aspect-ratio: 1; }
+  .pcard__media .note, .pcard__media .tag-provisoire { display: none; }
+  .pcard h3 { margin-top: 0; font-size: 1.125rem; }
+  .cproof li { padding: var(--s4); }
+  .c-page .seals { grid-template-columns: 1fr 1fr; row-gap: var(--s6); column-gap: var(--s4); }
+  .c-page .seal__ring { width: 96px; padding: 0 8px; }
+  .c-page .seal__ring b { font-size: 1rem; }
+  .c-page .seal__ring::before { inset: 5px; }
+  .c-page .lchips li { width: calc(50% - 6px); height: 88px; }
+}
+@media (max-width: 380px) { .cproof ul { grid-template-columns: 1fr; } }

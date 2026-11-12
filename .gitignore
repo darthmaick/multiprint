@@ -1,0 +1,19 @@
+# Contenus bruts du client (Drive) : documents ARMD confidentiels, tableau de participation photos,
+# originaux du shooting, inventaire du Drive. Le site utilise ses copies optimisées dans img/.
+sources-client/
+
+# Fichiers bruts récupérés sur le site actuel multiprint.cm (non utilisés par la maquette)
+assets/src/
+
+# Exports lourds régénérables (PDF de présentation, vidéo, captures) : tools/capture.py et tools/build_pdf.py
+exports/
+
+# Système et outils
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Support de préparation de l entretien client (notes internes), conservé en local
+deck-entretien/

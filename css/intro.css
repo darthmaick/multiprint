@@ -1,0 +1,84 @@
+/* Multiprint — intro animée du logo, reconstruite en SVG (aucune vidéo).
+   Chorégraphie en un seul geste continu : les phases se chevauchent (il y a toujours quelque chose en mouvement),
+   les arrivées décélèrent longuement (expo out), seuls les deux grands déplacements (remontée, vol) ont un départ
+   et une arrivée doux. La grille est hors du bloc logo : elle reste fixe pendant que le cube s'en détache.
+   Seuls transform, opacity, clip-path et stroke-dashoffset sont animés (couches dédiées, aucun masque animé).
+   Démarre quand la page est prête (.is-playing posé par le JS), une fois par visite, jamais sous
+   « réduire les animations ». Durée ≈ 4,2 s.
+
+   Séquence (ms, multipliée par --intro-pace) :
+     0 → 1800   construction fine et synchronisée : 12 traits de grille (0,8 px, décalés de 35 ms, 1400 ms),
+                 arêtes du logo (1,1 px, décalées de 110 ms, 1350 ms), remplissage par hachures tracées (120 → 1360, gauche → droite)
+  1750 → 2450   la grille s'efface sur place (sans aucun déplacement)
+  1900 → 2750   le cube remonte en se détachant de la grille
+  2100 → 2950   nom puis slogan, qui montent avec lui
+  ≈ 2850 → 3950 vol jusqu'au logo du header */
+
+.intro { display: none; }
+html.intro-on .intro {
+  --intro-pace: 1;                                    /* rythme global : plus grand = plus lent */
+  --intro-out: cubic-bezier(.25, 1, .5, 1);           /* arrivées : quart out (texte) */
+  --intro-draw: cubic-bezier(.42, .05, .2, 1);        /* tracé : départ doux, avance régulière, pose longue */
+  --intro-move: cubic-bezier(.45, 0, .15, 1);         /* grands déplacements : départ doux, arrivée très douce */
+  --intro-fade: cubic-bezier(.37, 0, .63, 1);         /* fondus : sinus in-out */
+  --intro-ease-flight: cubic-bezier(.7, 0, .2, 1);    /* vol vers le header */
+  --intro-leave: 1100ms;                              /* durée du vol */
+  position: fixed; inset: 0; z-index: 200; display: grid; place-items: center;
+  animation: introSafety 400ms 5s ease forwards; /* filet si le JS ne charge pas */
+}
+html.intro-on .intro::before { content: ""; position: absolute; inset: 0; background: #fff;
+  transition: opacity calc(var(--intro-leave) * .65) calc(var(--intro-leave) * .3) var(--intro-fade); }
+html.intro-on body { overflow: hidden; }
+html.intro-on .header__logo img { opacity: 0; }
+@keyframes introSafety { to { opacity: 0; visibility: hidden; } }
+
+/* Toutes les animations de la scène attendent le feu vert du JS (page prête = premières images fluides) */
+.intro__stage, .intro__stage * { animation-play-state: paused !important; }
+.intro.is-playing .intro__stage, .intro.is-playing .intro__stage * { animation-play-state: running !important; }
+
+.intro__stage { position: relative; width: min(520px, 78vw); }
+.intro__logo { position: relative; aspect-ratio: 1937 / 988; transform-origin: 0 0; translate: 0 19.6%; will-change: transform, translate;
+  animation: introRise calc(850ms * var(--intro-pace)) calc(1900ms * var(--intro-pace)) var(--intro-move) forwards; }
+@keyframes introRise { to { translate: 0 0; } }
+.intro__stage > svg, .intro__logo > svg { position: absolute; display: block; overflow: visible; }
+.intro__fill, .intro__edges { inset: 0; width: 100%; height: 100%; }
+
+/* 1. Grille de construction : alignée sur la position de départ du cube, elle ne bouge jamais */
+.intro__lines { left: -20.65%; top: -31.01%; width: 141.3%; height: 172.06%; will-change: opacity;
+  -webkit-mask-image: radial-gradient(38.4% 61.8% at 46.84% 47.06%, #000 0%, rgba(0,0,0,.9) 50%, transparent 100%);
+          mask-image: radial-gradient(38.4% 61.8% at 46.84% 47.06%, #000 0%, rgba(0,0,0,.9) 50%, transparent 100%);
+  animation: introFadeOut calc(700ms * var(--intro-pace)) calc(1750ms * var(--intro-pace)) var(--intro-fade) forwards; }
+.intro__lines line { stroke: #c22135; stroke-width: .8; vector-effect: non-scaling-stroke; shape-rendering: geometricPrecision; opacity: .6;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: introDraw calc(1400ms * var(--intro-pace)) calc(var(--d) * var(--intro-pace)) var(--intro-draw) forwards; }
+@keyframes introDraw { to { stroke-dashoffset: 0; } }
+@keyframes introFadeOut { to { opacity: 0; } }
+
+/* 2. Arêtes du logo */
+.intro__edges polygon { fill: none; stroke: #c22135; stroke-width: 1.1; vector-effect: non-scaling-stroke; stroke-linejoin: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: introDraw calc(1350ms * var(--intro-pace)) calc(var(--d) * var(--intro-pace)) var(--intro-draw) forwards; }
+
+/* 3. Remplissage construit par des traits : hachures verticales découpées à la forme du logo,
+      tracées de haut en bas et de gauche à droite, jointives une fois terminées (aucun fondu) */
+.intro__fill line { stroke: #c22135; stroke-width: 18; stroke-linecap: butt; shape-rendering: geometricPrecision;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: introDraw calc(620ms * var(--intro-pace)) calc(var(--d) * var(--intro-pace)) var(--intro-draw) forwards; }
+
+/* 4. Nom puis slogan : ils apparaissent pendant la remontée et finissent de monter avec le cube */
+.intro__word, .intro__tag { position: absolute; opacity: 0; translate: 0 var(--distance-medium); filter: blur(var(--blur-medium)); }
+.intro__word { left: 0; top: 64.88%; width: 100%;
+  animation: introReveal calc(750ms * var(--intro-pace)) calc(2100ms * var(--intro-pace)) var(--intro-out) forwards; }
+.intro__tag { left: 13.99%; top: 92.41%; width: 74.7%;
+  animation: introReveal calc(750ms * var(--intro-pace)) calc(2200ms * var(--intro-pace)) var(--intro-out) forwards; }
+@keyframes introReveal { to { opacity: 1; translate: 0 0; filter: blur(0); } }
+
+/* 5. Sortie : vol jusqu'au logo du header (piloté en JS), le fond s'efface pendant la seconde moitié du vol */
+.intro.is-leaving { pointer-events: none; }
+.intro.is-leaving::before { opacity: 0; }
+.intro.is-leaving .intro__logo { transition: transform var(--intro-leave) var(--intro-ease-flight); }
+.intro.is-leaving .intro__lines { display: none; }
+/* Échap ou clic : fermeture rapide, sans délai (règle des fermetures) */
+.intro.is-skipped { opacity: 0; transition: opacity var(--duration-quick) var(--ease-smooth-out); }
+
+@media (prefers-reduced-motion: reduce) { html.intro-on .intro { display: none; } html.intro-on body { overflow: auto; } html.intro-on .header__logo img { opacity: 1; } }
